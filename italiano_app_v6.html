@@ -3712,7 +3712,12 @@ async function sendVerbChat() {
 function markVerbMastered(id) {
   if (!masteredVerbs.includes(id)) {
     masteredVerbs.push(id);
-    localStorage.setItem('csd_verbs_mastered', JSON.stringify(masteredVerbs));
+    await supabase.from('app_data').upsert({
+  id: 1,
+  data: {
+    csd_rif_mastered: masteredRiflessivi
+  }
+});
   }
 }
 
@@ -4609,7 +4614,12 @@ function renderRifQuiz(c, v) {
     if (qIdx >= qs.length) {
       const pct = Math.round(score/qs.length*100);
       const stars = pct===100?3:pct>=66?2:1;
-      if (!masteredRiflessivi.includes(v.id)) { masteredRiflessivi.push(v.id); localStorage.setItem('csd_rif_mastered', JSON.stringify(masteredRiflessivi)); }
+      if (!masteredRiflessivi.includes(v.id)) { masteredRiflessivi.push(v.id); await supabase.from('app_data').upsert({
+  id: 1,
+  data: {
+    csd_rif_mastered: masteredRiflessivi
+  }
+}); }
       c.innerHTML = `
         <div style="text-align:center;padding:1.5rem 0">
           <div style="font-size:2.5rem;margin-bottom:0.5rem">${'⭐'.repeat(stars)}${'☆'.repeat(3-stars)}</div>
@@ -4777,7 +4787,12 @@ async function sendRifChat() {
 function addRifCompleteBtn() {
   if (!masteredRiflessivi.includes(currentRif.id)) {
     masteredRiflessivi.push(currentRif.id);
-    localStorage.setItem('csd_rif_mastered', JSON.stringify(masteredRiflessivi));
+    await supabase.from('app_data').upsert({
+  id: 1,
+  data: {
+    csd_rif_mastered: masteredRiflessivi
+  }
+});
   }
   const existing = document.getElementById('rif-complete-btn');
   if (existing) return;
@@ -4793,7 +4808,12 @@ function addRifCompleteBtn() {
 function renderRifComplete(c, v) {
   if (!masteredRiflessivi.includes(v.id)) {
     masteredRiflessivi.push(v.id);
-    localStorage.setItem('csd_rif_mastered', JSON.stringify(masteredRiflessivi));
+    await supabase.from('app_data').upsert({
+  id: 1,
+  data: {
+    csd_rif_mastered: masteredRiflessivi
+  }
+});
   }
   c.innerHTML = `
     <div style="text-align:center;padding:1rem 0 1.5rem">
@@ -5862,12 +5882,22 @@ function restartFlash() {
 function completeLesson(stars) {
   if (!completedLessons.includes(currentLesson.id)) {
     completedLessons.push(currentLesson.id);
-    localStorage.setItem('csd_completed', JSON.stringify(completedLessons));
+    await supabase.from('app_data').upsert({
+  id: 1,
+  data: {
+    csd_rif_mastered: masteredRiflessivi
+  }
+});
   }
   const prev = starScores[currentLesson.id] || 0;
   if (stars > prev) {
     starScores[currentLesson.id] = stars;
-    localStorage.setItem('csd_stars', JSON.stringify(starScores));
+    await supabase.from('app_data').upsert({
+  id: 1,
+  data: {
+    csd_rif_mastered: masteredRiflessivi
+  }
+});
   }
   showScreen('home');
   renderLessons();
@@ -5885,6 +5915,13 @@ function confirmBack() {
 }
 
 init();
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const supabase = window.supabase.createClient(
+  "https://wlzjitdwfamdoyftgczk.supabase.co",
+  "sb_publishable_6O780vkzZYSKTRDRLbyD4g_umhYUDeA"
+)
 </script>
 </body>
 </html>
